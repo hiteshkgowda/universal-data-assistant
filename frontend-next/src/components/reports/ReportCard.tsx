@@ -3,12 +3,34 @@
 import { motion } from "framer-motion";
 import type { Variants } from "framer-motion";
 import { Download, FileText, Layers, Sparkles } from "lucide-react";
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 import { formatBytes, formatRelativeTime } from "@/lib/format";
-import { reportDownloadUrl } from "@/lib/api/reports";
+import { getAuthToken } from "@/lib/auth-token";
 import type { ReportMetadata } from "@/lib/api/types";
+
+const BACKEND_URL =
+  process.env.NEXT_PUBLIC_BACKEND_URL?.replace(/\/$/, "") ?? "http://localhost:8000";
+
+async function downloadReport(reportId: string, filename: string) {
+  const url = `${BACKEND_URL}/api/v1/reports/${reportId}/download`;
+  const headers: HeadersInit = {};
+  const token = getAuthToken();
+  if (token) headers["Authorization"] = `Bearer ${token}`;
+
+  const res = await fetch(url, { headers });
+  if (!res.ok) throw new Error(`Download failed: ${res.status}`);
+
+  const blob = await res.blob();
+  const objectUrl = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = objectUrl;
+  a.download = filename;
+  a.click();
+  URL.revokeObjectURL(objectUrl);
+}
 
 export const cardVariants: Variants = {
   hidden: { opacity: 0, y: 16 },
@@ -22,6 +44,16 @@ interface ReportCardProps {
 export function ReportCard({ report }: ReportCardProps) {
   const totalSections =
     report.deterministic_section_count + report.ai_section_count;
+  const [downloading, setDownloading] = useState(false);
+
+  async function handleDownload() {
+    setDownloading(true);
+    try {
+      await downloadReport(report.report_id, `report_${report.report_id}.pdf`);
+    } finally {
+      setDownloading(false);
+    }
+  }
 
   return (
     <motion.div
@@ -57,18 +89,12 @@ export function ReportCard({ report }: ReportCardProps) {
           size="sm"
           variant="ghost"
           className="h-8 shrink-0 text-muted-foreground hover:text-primary hover:bg-primary/5"
-          asChild
+          onClick={handleDownload}
+          disabled={downloading}
+          aria-label={`Download report for ${report.dataset_filename}`}
         >
-          <a
-            href={reportDownloadUrl(report.report_id)}
-            target="_blank"
-            rel="noopener noreferrer"
-            download={`report_${report.report_id}.pdf`}
-            aria-label={`Download report for ${report.dataset_filename}`}
-          >
-            <Download className="mr-1.5 h-3.5 w-3.5" />
-            PDF
-          </a>
+          <Download className="mr-1.5 h-3.5 w-3.5" />
+          {downloading ? "…" : "PDF"}
         </Button>
       </div>
 
