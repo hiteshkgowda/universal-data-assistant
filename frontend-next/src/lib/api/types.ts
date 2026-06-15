@@ -486,6 +486,7 @@ export interface AgentSessionInfo {
   user_goal: string;
   current_step: number;
   total_steps: number;
+  plan: PlannedToolCall[];
   completed_results: ToolResult[];
   pending_approval: PendingApproval | null;
   final_answer: string | null;
@@ -605,6 +606,21 @@ export interface MemoryClearResponse {
   session_id: string;
   turns_cleared: number;
   message: string;
+}
+
+export interface HistoryTurn {
+  turn_id: string;
+  session_id: string;
+  created_at: string;
+  turn_type: string;
+  dataset_id: string | null;
+  question: string | null;
+  answer: string | null;
+}
+
+export interface QueryHistoryResponse {
+  total: number;
+  turns: HistoryTurn[];
 }
 
 // ---------------------------------------------------------------------------
@@ -808,6 +824,13 @@ export interface DashboardConfig {
   generation_time_ms: number;
   cache_hit: boolean;
   created_at: string;
+  share_token?: string | null;
+}
+
+export interface ShareDashboardResponse {
+  dashboard_id: string;
+  share_token: string;
+  share_url: string;
 }
 
 export interface DashboardMetadata {
@@ -870,4 +893,42 @@ export interface ScheduledReportCreate {
 export interface ScheduledReportListResponse {
   count: number;
   schedules: ScheduledReport[];
+}
+
+// ---------------------------------------------------------------------------
+// Saved Queries
+// ---------------------------------------------------------------------------
+
+export interface SavedQuery {
+  query_id: string;
+  name: string;
+  dataset_id: string;
+  dataset_filename: string;
+  question: string;
+  owner_sub: string;
+  created_at: string; // ISO 8601
+}
+
+export interface SavedQueryListResponse {
+  count: number;
+  queries: SavedQuery[];
+}
+
+// ---------------------------------------------------------------------------
+// Data Catalog
+// ---------------------------------------------------------------------------
+
+export interface ForeignKeyInfo {
+  name: string | null;
+  constrained_columns: string[];
+  referred_schema: string | null;
+  referred_table: string;
+  referred_columns: string[];
+}
+
+export interface TableSchemaResponse {
+  table: string;
+  schema_name: string | null;
+  columns: DbColumn[];       // same shape as backend TableColumn
+  foreign_keys: ForeignKeyInfo[];
 }

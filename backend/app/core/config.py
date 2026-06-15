@@ -25,6 +25,7 @@ _STORAGE_FIELDS: tuple[str, ...] = (
     "memory_store_dir",
     "dashboards_dir",
     "scheduled_reports_dir",
+    "saved_queries_dir",
 )
 
 
@@ -110,6 +111,9 @@ class Settings(BaseSettings):
 
     # Scheduled reports — one JSON file per schedule.
     scheduled_reports_dir: Path = Path("scheduled_reports")
+
+    # Saved Queries — one JSON file per saved query.
+    saved_queries_dir: Path = Path("saved_queries")
     # How often the background runner checks for due schedules (seconds).
     schedule_runner_poll_seconds: int = 60
 

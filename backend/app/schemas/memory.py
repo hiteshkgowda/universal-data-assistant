@@ -56,3 +56,22 @@ class MemoryClearResponse(BaseModel):
     session_id: str
     turns_cleared: int
     message: str
+
+
+class HistoryTurn(BaseModel):
+    """Lightweight turn for GET /memory/history — omits heavy JSON fields."""
+
+    turn_id: str
+    session_id: str
+    created_at: str
+    turn_type: str
+    dataset_id: Optional[str] = None
+    question: Optional[str] = None
+    answer: Optional[str] = None
+
+
+class QueryHistoryResponse(BaseModel):
+    """Returned by GET /memory/history."""
+
+    total: int
+    turns: list[HistoryTurn]

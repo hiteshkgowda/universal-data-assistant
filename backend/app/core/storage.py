@@ -65,6 +65,7 @@ class StorageManager:
             ("memory_store",        settings.memory_store_dir),
             ("dashboards",          settings.dashboards_dir),
             ("scheduled_reports",   settings.scheduled_reports_dir),
+            ("saved_queries",       settings.saved_queries_dir),
         ]
         self._is_production = settings.is_production
         # Persistent = operator explicitly set STORAGE_BASE_DIR, pointing to a

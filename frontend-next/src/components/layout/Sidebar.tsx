@@ -5,12 +5,18 @@ import { usePathname } from "next/navigation";
 import { useSession } from "next-auth/react";
 import { motion, useReducedMotion } from "framer-motion";
 import {
+  Bell,
+  Bookmark,
+  BookOpen,
   Bot,
   CalendarClock,
   ChevronLeft,
   ChevronRight,
   Database,
+  FileBarChart,
   FileText,
+  GitBranch,
+  History,
   Home,
   LayoutDashboard,
   Link2,
@@ -40,14 +46,19 @@ const navGroups: NavGroup[] = [
     items: [
       { href: "/", label: "Home", icon: Home, exact: true },
       { href: "/datasets", label: "Datasets", icon: Database },
+      { href: "/catalog", label: "Catalog", icon: BookOpen },
     ],
   },
   {
     label: "Analysis",
     items: [
       { href: "/dashboards", label: "Dashboards", icon: LayoutDashboard },
-      { href: "/reports", label: "Reports", icon: FileText },
+      { href: "/reports", label: "Reports", icon: FileText, exact: true },
       { href: "/reports/scheduled", label: "Scheduled", icon: CalendarClock },
+      { href: "/alerts", label: "Alerts", icon: Bell },
+      { href: "/briefing", label: "Briefing", icon: FileBarChart },
+      { href: "/history", label: "History", icon: History },
+      { href: "/saved-queries", label: "Saved", icon: Bookmark },
     ],
   },
   {
@@ -55,6 +66,7 @@ const navGroups: NavGroup[] = [
     items: [
       { href: "/crud", label: "CRUD", icon: PenLine },
       { href: "/agent", label: "Agent", icon: Bot },
+      { href: "/agents/trace", label: "Trace", icon: GitBranch },
     ],
   },
   {

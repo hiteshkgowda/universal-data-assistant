@@ -105,6 +105,54 @@ class DashboardStore:
 
         return config
 
+    def set_share_token(
+        self, dashboard_id: str, owner_sub: str, token: str
+    ) -> DashboardConfig:
+        """Persist ``token`` on the dashboard and return the updated config."""
+        config = self.get(dashboard_id, owner_sub)
+        updated = config.model_copy(update={"share_token": token})
+        path = self._dir / f"{dashboard_id}.json"
+        tmp = path.with_suffix(".tmp")
+        try:
+            tmp.write_text(updated.model_dump_json(), encoding="utf-8")
+            tmp.rename(path)
+        except OSError as exc:
+            logger.error("DashboardStore.set_share_token: failed to write %s: %s", path, exc)
+            raise
+        return updated
+
+    def revoke_share_token(self, dashboard_id: str, owner_sub: str) -> DashboardConfig:
+        """Clear any share token and return the updated config."""
+        config = self.get(dashboard_id, owner_sub)
+        updated = config.model_copy(update={"share_token": None})
+        path = self._dir / f"{dashboard_id}.json"
+        tmp = path.with_suffix(".tmp")
+        try:
+            tmp.write_text(updated.model_dump_json(), encoding="utf-8")
+            tmp.rename(path)
+        except OSError as exc:
+            logger.error("DashboardStore.revoke_share_token: failed to write %s: %s", path, exc)
+            raise
+        return updated
+
+    def get_by_share_token(self, token: str) -> DashboardConfig:
+        """Return the dashboard whose share_token matches ``token``.
+
+        Raises:
+            DashboardNotFoundError: if no matching dashboard is found.
+        """
+        for path in self._dir.glob("*.json"):
+            if path.suffix == ".tmp":
+                continue
+            try:
+                raw = json.loads(path.read_text(encoding="utf-8"))
+                config = DashboardConfig(**raw)
+            except (OSError, json.JSONDecodeError, ValueError):
+                continue
+            if config.share_token and config.share_token == token:
+                return config
+        raise DashboardNotFoundError(f"Shared dashboard not found.")
+
     def list_for_user(self, owner_sub: str) -> list[DashboardMetadata]:
         """Return all dashboards owned by ``owner_sub``, newest first."""
         results: list[DashboardMetadata] = []

@@ -4,7 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useMutation, useQuery } from "@tanstack/react-query";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import type { Variants } from "framer-motion";
 import {
   BarChart2,
@@ -12,6 +12,7 @@ import {
   ChevronRight,
   LayoutDashboard,
   Loader2,
+  LayoutGrid,
   Plus,
   Sparkles,
   X,
@@ -23,6 +24,10 @@ import { listDashboards, generateDashboard, saveDashboard } from "@/lib/api/dash
 import { listDatasets } from "@/lib/api/datasets";
 import type { DashboardConfig } from "@/lib/api/types";
 import { formatRelativeTime } from "@/lib/format";
+import {
+  DashboardTemplateGallery,
+  type DashboardTemplate,
+} from "./DashboardTemplateGallery";
 
 const fadeUp: Variants = {
   hidden: { opacity: 0, y: 10 },
@@ -37,14 +42,23 @@ const stagger: Variants = {
 
 interface CreateModalProps {
   onClose: () => void;
+  initialTemplate?: DashboardTemplate | null;
 }
 
-function CreateModal({ onClose }: CreateModalProps) {
+function CreateModal({ onClose, initialTemplate }: CreateModalProps) {
   const router = useRouter();
   const [datasetId, setDatasetId] = useState("");
   const [prompt, setPrompt] = useState(
-    "Create an executive overview dashboard with key performance indicators and trend charts."
+    initialTemplate?.prompt ??
+      "Create an executive overview dashboard with key performance indicators and trend charts."
   );
+  const [selectedTemplate, setSelectedTemplate] = useState<DashboardTemplate | null>(
+    initialTemplate ?? null
+  );
+  const [showTemplates, setShowTemplates] = useState(!initialTemplate);
+
+  const maxKpis = selectedTemplate?.max_kpis ?? 8;
+  const maxCharts = selectedTemplate?.max_charts ?? 4;
 
   const { data: datasetsResp, isLoading: datasetsLoading } = useQuery({
     queryKey: ["datasets-list"],
@@ -57,8 +71,8 @@ function CreateModal({ onClose }: CreateModalProps) {
       const generated = await generateDashboard({
         dataset_id: datasetId,
         prompt,
-        max_kpis: 8,
-        max_charts: 4,
+        max_kpis: maxKpis,
+        max_charts: maxCharts,
       });
       const config: DashboardConfig = {
         dashboard_id: null,
@@ -85,6 +99,12 @@ function CreateModal({ onClose }: CreateModalProps) {
     },
   });
 
+  function handleTemplateSelect(t: DashboardTemplate) {
+    setSelectedTemplate(t);
+    setPrompt(t.prompt);
+    setShowTemplates(false);
+  }
+
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
       <motion.div
@@ -92,8 +112,9 @@ function CreateModal({ onClose }: CreateModalProps) {
         animate={{ opacity: 1, scale: 1, y: 0 }}
         exit={{ opacity: 0, scale: 0.96 }}
         transition={{ duration: 0.18 }}
-        className="w-full max-w-md rounded-2xl border border-border/60 bg-card shadow-2xl p-6 space-y-5"
+        className="w-full max-w-lg rounded-2xl border border-border/60 bg-card shadow-2xl p-6 space-y-5 max-h-[90vh] overflow-y-auto"
       >
+        {/* Header */}
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2.5">
             <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary/10">
@@ -106,11 +127,62 @@ function CreateModal({ onClose }: CreateModalProps) {
           <button
             onClick={onClose}
             className="text-muted-foreground hover:text-foreground transition-colors"
+            aria-label="Close"
           >
             <X className="h-4 w-4" />
           </button>
         </div>
 
+        {/* Template picker toggle */}
+        <div className="space-y-2">
+          <div className="flex items-center justify-between">
+            <p className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">
+              {showTemplates ? "Pick a template" : "Template"}
+            </p>
+            <button
+              onClick={() => setShowTemplates((v) => !v)}
+              className="text-[11px] text-primary hover:underline transition-colors"
+            >
+              {showTemplates ? "Skip — write custom prompt" : "Change template"}
+            </button>
+          </div>
+
+          <AnimatePresence mode="wait">
+            {showTemplates ? (
+              <motion.div
+                key="gallery"
+                initial={{ opacity: 0, height: 0 }}
+                animate={{ opacity: 1, height: "auto" }}
+                exit={{ opacity: 0, height: 0 }}
+                transition={{ duration: 0.18 }}
+                className="overflow-hidden"
+              >
+                <DashboardTemplateGallery
+                  onSelect={handleTemplateSelect}
+                  selectedId={selectedTemplate?.id}
+                />
+              </motion.div>
+            ) : (
+              <motion.div
+                key="chip"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.12 }}
+              >
+                {selectedTemplate ? (
+                  <span className="inline-flex items-center gap-1.5 rounded-full bg-primary/10 px-3 py-1 text-xs font-medium text-primary">
+                    {selectedTemplate.name}
+                  </span>
+                ) : (
+                  <span className="text-xs text-muted-foreground">Custom prompt</span>
+                )}
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </div>
+
+        {/* Form fields */}
         <div className="space-y-4">
           <div className="space-y-1.5">
             <label className="text-sm font-medium text-foreground">
@@ -227,6 +299,17 @@ function DashboardCard({
 
 export function DashboardHub() {
   const [showCreate, setShowCreate] = useState(false);
+  const [selectedTemplate, setSelectedTemplate] = useState<DashboardTemplate | null>(null);
+
+  function openWithTemplate(t: DashboardTemplate) {
+    setSelectedTemplate(t);
+    setShowCreate(true);
+  }
+
+  function openBlank() {
+    setSelectedTemplate(null);
+    setShowCreate(true);
+  }
 
   const { data, isLoading, isError, refetch } = useQuery({
     queryKey: ["dashboards-list"],
@@ -238,7 +321,14 @@ export function DashboardHub() {
 
   return (
     <>
-      {showCreate && <CreateModal onClose={() => setShowCreate(false)} />}
+      <AnimatePresence>
+        {showCreate && (
+          <CreateModal
+            onClose={() => setShowCreate(false)}
+            initialTemplate={selectedTemplate}
+          />
+        )}
+      </AnimatePresence>
 
       <div className="max-w-3xl mx-auto px-6 py-8 space-y-8">
         {/* header */}
@@ -257,10 +347,21 @@ export function DashboardHub() {
               </p>
             </div>
           </div>
-          <Button onClick={() => setShowCreate(true)}>
+          <Button onClick={openBlank}>
             <Plus className="mr-2 h-4 w-4" />
             New Dashboard
           </Button>
+        </div>
+
+        {/* Template gallery */}
+        <div className="space-y-3">
+          <div className="flex items-center gap-2">
+            <LayoutGrid className="h-4 w-4 text-muted-foreground" aria-hidden />
+            <p className="text-sm font-semibold text-foreground">
+              Start from a template
+            </p>
+          </div>
+          <DashboardTemplateGallery onSelect={openWithTemplate} />
         </div>
 
         {/* list */}
@@ -295,7 +396,7 @@ export function DashboardHub() {
                 Generate a dashboard from any dataset to get started
               </p>
             </div>
-            <Button onClick={() => setShowCreate(true)}>
+            <Button onClick={openBlank}>
               <Plus className="mr-2 h-4 w-4" />
               Create your first dashboard
             </Button>

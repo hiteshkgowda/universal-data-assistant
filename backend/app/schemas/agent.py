@@ -150,6 +150,7 @@ class AgentSessionInfo(BaseModel):
     user_goal: str
     current_step: int
     total_steps: int
+    plan: list[PlannedToolCall] = Field(default_factory=list)
     completed_results: list[ToolResult] = Field(default_factory=list)
     pending_approval: Optional[PendingApproval] = None
     final_answer: Optional[str] = None

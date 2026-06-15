@@ -49,6 +49,7 @@ from app.api.routes import (
     recommendations,
     reports,
     root_cause,
+    saved_queries,
     scheduled_reports,
 )
 from app.core.config import Settings, get_settings
@@ -277,6 +278,7 @@ def create_app() -> FastAPI:
     app.include_router(data_quality.router, prefix=API_PREFIX)
     app.include_router(kpi_monitor.router, prefix=API_PREFIX)
     app.include_router(scheduled_reports.router, prefix=API_PREFIX)
+    app.include_router(saved_queries.router, prefix=API_PREFIX)
 
     @app.get("/health", tags=["health"], summary="Service health check")
     def health() -> dict[str, Any]:

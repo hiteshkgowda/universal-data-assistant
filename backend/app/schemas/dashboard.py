@@ -108,6 +108,9 @@ class DashboardConfig(BaseModel):
     created_at: datetime = Field(
         default_factory=lambda: datetime.now(timezone.utc)
     )
+    share_token: Optional[str] = Field(
+        default=None, description="Set when the dashboard has been shared publicly."
+    )
 
 
 # ---------------------------------------------------------------------------
@@ -181,3 +184,11 @@ class DashboardListResponse(BaseModel):
 
     count: int
     dashboards: list[DashboardMetadata]
+
+
+class ShareDashboardResponse(BaseModel):
+    """Response from POST /api/v1/dashboards/{id}/share."""
+
+    dashboard_id: str
+    share_token: str
+    share_url: str

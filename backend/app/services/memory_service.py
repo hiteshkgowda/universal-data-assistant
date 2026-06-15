@@ -23,7 +23,9 @@ from typing import Any, Optional
 from app.schemas.memory import (
     ConversationContext,
     ConversationTurn,
+    HistoryTurn,
     MemoryClearResponse,
+    QueryHistoryResponse,
     TurnType,
 )
 
@@ -167,6 +169,32 @@ class MemoryService:
             turns_cleared=cleared,
             message=f"Cleared {cleared} turn(s) from session.",
         )
+
+    # ------------------------------------------------------------------
+    # History
+    # ------------------------------------------------------------------
+
+    async def get_history(
+        self,
+        user_sub: str,
+        *,
+        search: Optional[str] = None,
+        turn_types: Optional[list[str]] = None,
+        dataset_id: Optional[str] = None,
+        limit: int = 50,
+        offset: int = 0,
+    ) -> QueryHistoryResponse:
+        """Return all turns across all sessions for user_sub."""
+        total, turns_raw = await self._store.load_user_history(
+            user_sub,
+            search=search,
+            turn_types=turn_types,
+            dataset_id=dataset_id,
+            limit=limit,
+            offset=offset,
+        )
+        turns = [HistoryTurn.model_validate(t) for t in turns_raw]
+        return QueryHistoryResponse(total=total, turns=turns)
 
     # ------------------------------------------------------------------
     # Maintenance

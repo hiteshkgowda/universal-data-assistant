@@ -2,7 +2,9 @@
 
 from __future__ import annotations
 
-from fastapi import APIRouter, Depends, HTTPException, status
+from typing import Optional
+
+from fastapi import APIRouter, Depends, HTTPException, Query, status
 from starlette.concurrency import run_in_threadpool
 
 from app.api.dependencies import get_connection_service, get_dataset_service
@@ -14,6 +16,7 @@ from app.core.exceptions import (
     ValidationError,
 )
 from app.schemas.auth import CurrentUser
+from app.schemas.catalog import TableSchemaResponse
 from app.schemas.connection import (
     ConnectionCreate,
     ConnectionMetadata,
@@ -121,6 +124,46 @@ async def list_tables(
     except DatabaseError as exc:
         raise HTTPException(status_code=status.HTTP_502_BAD_GATEWAY, detail=str(exc)) from exc
     return TableListResponse(count=len(tables), tables=tables)
+
+
+@router.get(
+    "/{connection_id}/describe",
+    response_model=TableSchemaResponse,
+    summary="Describe a table: columns and foreign keys",
+)
+async def describe_table(
+    connection_id: HexId,
+    table: str = Query(..., min_length=1, description="Table name."),
+    schema: Optional[str] = Query(None, description="Schema/namespace (optional)."),
+    service: ConnectionService = Depends(get_connection_service),
+    current_user: CurrentUser = Depends(get_current_user),
+) -> TableSchemaResponse:
+    """Return column definitions and foreign-key constraints for a single table.
+
+    Used by the Data Catalog to populate the detail panel without registering
+    the table as a dataset first.  Raises 404 if the connection is not found
+    or is not owned by the current user, and 502 if the database is unreachable.
+    """
+    await run_in_threadpool(_assert_connection_owner, service, connection_id, current_user.sub)
+    try:
+        columns = await run_in_threadpool(
+            service.describe_table, connection_id, schema, table
+        )
+        foreign_keys = await run_in_threadpool(
+            service.get_foreign_keys, connection_id, schema, table
+        )
+    except ConnectionNotFoundError as exc:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(exc)) from exc
+    except ValidationError as exc:
+        raise HTTPException(status_code=status.HTTP_422_UNPROCESSABLE_ENTITY, detail=str(exc)) from exc
+    except DatabaseError as exc:
+        raise HTTPException(status_code=status.HTTP_502_BAD_GATEWAY, detail=str(exc)) from exc
+    return TableSchemaResponse(
+        table=table,
+        schema_name=schema,
+        columns=columns,
+        foreign_keys=foreign_keys,
+    )
 
 
 @router.post(

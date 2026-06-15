@@ -141,6 +141,64 @@ class ConversationStore:
             row = await cursor.fetchone()
             return row[0] if row else 0
 
+    async def load_user_history(
+        self,
+        user_sub: str,
+        *,
+        search: Optional[str] = None,
+        turn_types: Optional[list[str]] = None,
+        dataset_id: Optional[str] = None,
+        limit: int = 50,
+        offset: int = 0,
+    ) -> tuple[int, list[dict]]:
+        """Return (total_count, turns) across ALL sessions for user_sub.
+
+        Only lightweight columns are selected — heavy JSON blobs (table_data,
+        chart_spec, etc.) are excluded so large histories stay fast.
+        """
+        conditions = ["user_sub = ?"]
+        params: list = [user_sub]
+
+        if search:
+            conditions.append("question LIKE ?")
+            params.append(f"%{search}%")
+
+        if turn_types:
+            placeholders = ",".join("?" * len(turn_types))
+            conditions.append(f"turn_type IN ({placeholders})")
+            params.extend(turn_types)
+
+        if dataset_id:
+            conditions.append("dataset_id = ?")
+            params.append(dataset_id)
+
+        where = " AND ".join(conditions)
+
+        async with aiosqlite.connect(self._db_path) as db:
+            db.row_factory = aiosqlite.Row
+
+            count_cursor = await db.execute(
+                f"SELECT COUNT(*) FROM conversation_turns WHERE {where}",
+                params,
+            )
+            count_row = await count_cursor.fetchone()
+            total: int = count_row[0] if count_row else 0
+
+            cursor = await db.execute(
+                f"""
+                SELECT turn_id, session_id, created_at, turn_type,
+                       dataset_id, question, answer
+                FROM conversation_turns
+                WHERE {where}
+                ORDER BY created_at DESC
+                LIMIT ? OFFSET ?
+                """,
+                params + [limit, offset],
+            )
+            rows = await cursor.fetchall()
+
+        return total, [dict(r) for r in rows]
+
     async def expire_old_turns(self, older_than_iso: str) -> int:
         """Delete turns with created_at < older_than_iso (ISO 8601)."""
         async with aiosqlite.connect(self._db_path) as db:

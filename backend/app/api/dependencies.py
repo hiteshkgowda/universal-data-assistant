@@ -393,3 +393,10 @@ def get_schedule_runner() -> ScheduleRunner:
         report_service=get_report_service(),
         poll_interval=settings.schedule_runner_poll_seconds,
     )
+
+
+@lru_cache(maxsize=1)
+def get_saved_query_store():
+    from app.services.saved_query_store import SavedQueryStore  # noqa: PLC0415
+
+    return SavedQueryStore(get_settings().saved_queries_dir)

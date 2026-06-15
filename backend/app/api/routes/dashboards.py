@@ -17,9 +17,10 @@ from __future__ import annotations
 
 import asyncio
 import logging
+import secrets
 from typing import Optional
 
-from fastapi import APIRouter, Depends, Header, HTTPException, status
+from fastapi import APIRouter, Depends, Header, HTTPException, Request, status
 
 from app.api.dependencies import (
     get_dashboard_service,
@@ -36,6 +37,7 @@ from app.schemas.dashboard import (
     GenerateDashboardResponse,
     SaveDashboardRequest,
     SaveDashboardResponse,
+    ShareDashboardResponse,
 )
 from app.schemas.memory import TurnType
 from app.services.dashboard_generator import DashboardGeneratorService
@@ -182,3 +184,85 @@ async def save_dashboard(
         created_at=meta.created_at,
         message="Dashboard saved successfully.",
     )
+
+
+@router.get(
+    "/shared/{token}",
+    response_model=DashboardConfig,
+    summary="Retrieve a shared dashboard by public token (no auth required)",
+)
+async def get_shared_dashboard(
+    token: str,
+    dashboard_svc: DashboardGeneratorService = Depends(get_dashboard_service),
+) -> DashboardConfig:
+    """Return a shared dashboard.  No authentication required.
+
+    Raises:
+        HTTP 404: Token does not match any shared dashboard.
+    """
+    try:
+        return dashboard_svc._store.get_by_share_token(token)
+    except DashboardNotFoundError as exc:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail=str(exc)
+        ) from exc
+
+
+@router.post(
+    "/{dashboard_id}/share",
+    response_model=ShareDashboardResponse,
+    summary="Generate a public share link for a saved dashboard",
+    status_code=status.HTTP_200_OK,
+)
+async def share_dashboard(
+    dashboard_id: str,
+    request: Request,
+    dashboard_svc: DashboardGeneratorService = Depends(get_dashboard_service),
+    current_user: CurrentUser = Depends(get_current_user),
+) -> ShareDashboardResponse:
+    """Create or refresh the public share token for a dashboard.
+
+    Calling this endpoint again replaces the previous token, invalidating
+    any previously shared links.
+
+    Raises:
+        HTTP 404: Dashboard not found or not owned by the current user.
+    """
+    token = secrets.token_urlsafe(24)
+    try:
+        dashboard_svc._store.set_share_token(dashboard_id, current_user.sub, token)
+    except DashboardNotFoundError as exc:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail=str(exc)
+        ) from exc
+
+    base_url = str(request.base_url).rstrip("/")
+    share_url = f"{base_url}/dashboards/shared/{token}"
+    return ShareDashboardResponse(
+        dashboard_id=dashboard_id,
+        share_token=token,
+        share_url=share_url,
+    )
+
+
+@router.delete(
+    "/{dashboard_id}/share",
+    status_code=status.HTTP_204_NO_CONTENT,
+    summary="Revoke the public share link for a dashboard",
+)
+async def revoke_dashboard_share(
+    dashboard_id: str,
+    dashboard_svc: DashboardGeneratorService = Depends(get_dashboard_service),
+    current_user: CurrentUser = Depends(get_current_user),
+) -> None:
+    """Revoke the share token so the dashboard is no longer publicly accessible.
+
+    Raises:
+        HTTP 404: Dashboard not found or not owned by the current user.
+    """
+    try:
+        dashboard_svc._store.revoke_share_token(dashboard_id, current_user.sub)
+    except DashboardNotFoundError as exc:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail=str(exc)
+        ) from exc

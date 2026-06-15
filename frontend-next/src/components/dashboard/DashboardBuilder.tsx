@@ -11,6 +11,7 @@ import {
   Gauge,
   GripHorizontal,
   LayoutDashboard,
+  Link2,
   Loader2,
   Minus,
   Pencil,
@@ -23,6 +24,7 @@ import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { PlotlyChart } from "@/components/ask/PlotlyChart";
+import { ShareModal } from "./ShareModal";
 import {
   generateDashboard,
   saveDashboard,
@@ -347,6 +349,8 @@ export function DashboardBuilder({
   );
   const [editMode, setEditMode] = useState(false);
   const [isDirty, setIsDirty] = useState(false);
+  const [showShare, setShowShare] = useState(false);
+  const [shareToken, setShareToken] = useState<string | null>(null);
   const [savedId, setSavedId] = useState<string | null>(dashboardId ?? null);
   const [dashboardName, setDashboardName] = useState("My Dashboard");
   const [kpis, setKpis] = useState<KPIMetric[]>([]);
@@ -386,6 +390,7 @@ export function DashboardBuilder({
     setKpis(loadedConfig.kpis);
     setCharts(loadedConfig.charts);
     setActiveDatasetId(loadedConfig.dataset_id);
+    setShareToken(loadedConfig.share_token ?? null);
     setRglLayout(
       buildInitialLayout(loadedConfig.kpis, loadedConfig.charts, loadedConfig.layout)
     );
@@ -568,6 +573,15 @@ export function DashboardBuilder({
   // ── Editor ────────────────────────────────────────────────────────────────
   return (
     <div className="flex flex-col h-full overflow-hidden">
+      {showShare && savedId && (
+        <ShareModal
+          dashboardId={savedId}
+          initialToken={shareToken}
+          onClose={() => setShowShare(false)}
+          onTokenChange={(t) => setShareToken(t)}
+        />
+      )}
+
       {/* toolbar */}
       <div className="shrink-0 flex items-center justify-between gap-4 px-5 py-3 border-b border-border/60 bg-background/80 backdrop-blur-sm">
         <div className="flex items-center gap-2.5 min-w-0">
@@ -602,6 +616,17 @@ export function DashboardBuilder({
               className="text-muted-foreground hidden sm:flex"
             >
               Regenerate
+            </Button>
+          )}
+          {savedId && (
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setShowShare(true)}
+              className={shareToken ? "text-primary border-primary/40" : ""}
+            >
+              <Link2 className="mr-1.5 h-3.5 w-3.5" />
+              {shareToken ? "Shared" : "Share"}
             </Button>
           )}
           <Button

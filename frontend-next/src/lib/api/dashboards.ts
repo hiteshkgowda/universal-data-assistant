@@ -1,4 +1,4 @@
-import { api, LLM_TIMEOUT_MS } from "./client";
+import { api, BASE_URL, LLM_TIMEOUT_MS } from "./client";
 import type {
   DashboardConfig,
   DashboardListResponse,
@@ -6,6 +6,7 @@ import type {
   GenerateDashboardResponse,
   SaveDashboardRequest,
   SaveDashboardResponse,
+  ShareDashboardResponse,
 } from "./types";
 
 const PREFIX = "/api/v1";
@@ -32,4 +33,29 @@ export async function getDashboard(id: string): Promise<DashboardConfig> {
 
 export async function listDashboards(): Promise<DashboardListResponse> {
   return api.get<DashboardListResponse>(`${PREFIX}/dashboards`);
+}
+
+export async function shareDashboard(
+  dashboardId: string
+): Promise<ShareDashboardResponse> {
+  return api.post<ShareDashboardResponse>(
+    `${PREFIX}/dashboards/${dashboardId}/share`
+  );
+}
+
+export async function revokeDashboardShare(dashboardId: string): Promise<void> {
+  return api.delete<void>(`${PREFIX}/dashboards/${dashboardId}/share`);
+}
+
+export async function getSharedDashboard(
+  token: string
+): Promise<DashboardConfig> {
+  const res = await fetch(`${BASE_URL}${PREFIX}/dashboards/shared/${token}`, {
+    credentials: "omit",
+  });
+  if (!res.ok) {
+    const text = await res.text().catch(() => res.statusText);
+    throw new Error(text || `HTTP ${res.status}`);
+  }
+  return res.json() as Promise<DashboardConfig>;
 }

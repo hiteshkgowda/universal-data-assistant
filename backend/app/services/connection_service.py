@@ -214,6 +214,35 @@ class ConnectionService:
             for column in columns
         ]
 
+    def get_foreign_keys(
+        self, connection_id: str, schema: Optional[str], table: str
+    ) -> list:
+        """Return foreign-key constraints for a table.
+
+        Uses the same SQLAlchemy inspector as ``describe_table()``.
+        Returns an empty list for databases / drivers that don't expose FK info
+        (e.g. SQLite without ``PRAGMA foreign_keys=ON`` introspection,
+        MySQL MyISAM).  Never raises on an empty result.
+        """
+        from app.schemas.catalog import ForeignKeyInfo  # local import — avoids circular
+
+        engine = self.get_engine(connection_id)
+        try:
+            inspector = inspect(engine)
+            raw_fks = inspector.get_foreign_keys(table, schema=schema)
+        except SQLAlchemyError as exc:
+            raise DatabaseError("Failed to get foreign keys.") from exc
+        return [
+            ForeignKeyInfo(
+                name=fk.get("name"),
+                constrained_columns=[str(c) for c in fk["constrained_columns"]],
+                referred_schema=fk.get("referred_schema"),
+                referred_table=fk["referred_table"],
+                referred_columns=[str(c) for c in fk["referred_columns"]],
+            )
+            for fk in raw_fks
+        ]
+
     def estimate_row_count(
         self, connection_id: str, schema: Optional[str], table: str
     ) -> Optional[int]:

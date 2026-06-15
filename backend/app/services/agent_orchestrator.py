@@ -272,12 +272,15 @@ class AgentOrchestrator:
 
         completed = [ToolResult(**r) for r in results if isinstance(r, dict)]
 
+        plan_steps = [PlannedToolCall(**p) for p in plan if isinstance(p, dict)]
+
         return AgentSessionInfo(
             session_id=session_id,
             status=status,
             user_goal=state.get("user_goal", ""),
             current_step=current_step,
             total_steps=len(plan),
+            plan=plan_steps,
             completed_results=completed,
             pending_approval=pending,
             final_answer=state.get("final_answer"),

@@ -14,7 +14,7 @@ import { getAuthToken, setAuthToken } from "@/lib/auth-token";
 
 export const LLM_TIMEOUT_MS = 120_000;
 
-const BASE_URL =
+export const BASE_URL =
   process.env.NEXT_PUBLIC_BACKEND_URL?.replace(/\/$/, "") ??
   "http://localhost:8000";
 
