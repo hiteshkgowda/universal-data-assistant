@@ -1,4 +1,4 @@
-# Universal Data Assistant — System Audit
+# DataPilot AI — System Audit
 > Generated: 2026-06-12 | Auditor: automated codebase analysis
 
 ---

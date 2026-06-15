@@ -189,10 +189,10 @@ export function Sidebar() {
           {!collapsed && (
             <div className="min-w-0">
               <p className="text-sm font-semibold tracking-tight truncate text-sidebar-foreground leading-none">
-                Data Assistant
+                DataPilot AI
               </p>
               <p className="text-[10px] text-sidebar-muted leading-none mt-0.5">
-                Universal
+                Agentic BI
               </p>
             </div>
           )}

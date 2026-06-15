@@ -238,7 +238,7 @@ def create_app() -> FastAPI:
     app = FastAPI(
         title=settings.app_name,
         version="0.1.0",
-        description="AI-powered Universal Data Assistant API.",
+        description="AI-powered DataPilot AI API.",
         lifespan=lifespan,
         # Disable interactive API docs in production — they expose the full API
         # surface publicly. Set APP_ENV=development to re-enable locally.

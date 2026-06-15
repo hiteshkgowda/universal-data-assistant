@@ -1,4 +1,4 @@
-# Universal Data Assistant — Interview Guide
+# DataPilot AI — Interview Guide
 
 Technical reference for senior backend and AI engineer interviews.  
 Each section covers one design decision: the context, the choice, the trade-offs, and the code evidence.

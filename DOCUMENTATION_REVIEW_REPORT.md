@@ -63,7 +63,7 @@ Maintain consistency with this PROJECT_CONTEXT.md file at all times.
 **Proposed:** Remove the entire "Claude Instructions" section. Replace the boilerplate top with a brief, honest project description.
 
 **Other phrase changes:**
-- "Build an AI-powered Universal Data Assistant" → "A web app that lets you upload data and ask questions about it in plain English"
+- "Build an AI-powered DataPilot AI" → "A web app that lets you upload data and ask questions about it in plain English"
 - "enables non-technical users" → trim to "lets people without SQL skills"
 
 ---

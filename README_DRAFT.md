@@ -1,4 +1,4 @@
-# Universal Data Assistant
+# DataPilot AI
 
 A full-stack web application that lets users upload data, connect to databases, and ask questions in plain English. The backend answers using deterministic code — the LLM picks what to run, not how to run it.
 
@@ -24,7 +24,7 @@ Built solo over roughly 14 incremental phases, starting with a Streamlit proof-o
 
 ## 1. Project Overview
 
-Universal Data Assistant is a data analysis tool that sits between a raw dataset and a useful answer. You upload a CSV, connect a Postgres database, or point it at an Excel file — then ask questions in plain English. The system figures out what operation to run, executes it, and returns a result with a chart.
+DataPilot AI is a data analysis tool that sits between a raw dataset and a useful answer. You upload a CSV, connect a Postgres database, or point it at an Excel file — then ask questions in plain English. The system figures out what operation to run, executes it, and returns a result with a chart.
 
 Beyond basic queries it can:
 - Forecast time series using a statistical model chain

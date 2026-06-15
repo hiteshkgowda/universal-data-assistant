@@ -1,4 +1,4 @@
-"""Streamlit frontend for the Universal Data Assistant.
+"""Streamlit frontend for the DataPilot AI.
 
 This client is fully decoupled from the backend: it communicates only over
 HTTP using the configurable ``BACKEND_URL``. That keeps a future React rewrite
@@ -540,8 +540,8 @@ def render_datasets_tab() -> None:
 
 def main() -> None:
     """Compose the Streamlit page."""
-    st.set_page_config(page_title="Universal Data Assistant", layout="wide")
-    st.title("📊 Universal Data Assistant")
+    st.set_page_config(page_title="DataPilot AI", layout="wide")
+    st.title("📊 DataPilot AI")
     st.caption(f"Connected to backend: {BACKEND_URL}")
 
     upload_tab, connect_tab, datasets_tab, ask_tab, forecast_tab, reports_tab = (

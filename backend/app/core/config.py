@@ -73,7 +73,7 @@ class Settings(BaseSettings):
         return self
 
     # Application
-    app_name: str = "Universal Data Assistant"
+    app_name: str = "DataPilot AI"
     # "development" (default) or "production".
     # In production mode the app enforces stricter security:
     #   - /docs and /redoc are disabled

@@ -26,11 +26,11 @@ const jetBrainsMono = JetBrains_Mono({
 
 export const metadata: Metadata = {
   title: {
-    default: "Universal Data Assistant",
-    template: "%s — UDA",
+    default: "DataPilot AI",
+    template: "%s — DataPilot AI",
   },
   description:
-    "Ask questions about your data in plain English. Get charts, forecasts, and PDF reports.",
+    "Agentic Business Intelligence Copilot. Ask questions about your data in plain English. Get charts, forecasts, and PDF reports.",
 };
 
 export default function RootLayout({

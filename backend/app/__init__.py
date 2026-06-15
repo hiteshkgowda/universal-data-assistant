@@ -1,1 +1,1 @@
-"""Universal Data Assistant backend application package."""
+"""DataPilot AI backend application package."""

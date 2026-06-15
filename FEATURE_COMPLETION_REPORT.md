@@ -1,5 +1,5 @@
 # Feature Completion Report
-**Universal Data Assistant — Audit Date: 2026-06-13**
+**DataPilot AI — Audit Date: 2026-06-13**
 **Commit audited: `32b2b50b`**
 
 > Evidence is cited as `file:line_range` or `file::function_name`.

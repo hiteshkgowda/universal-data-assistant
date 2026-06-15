@@ -1,4 +1,4 @@
-# Universal Data Assistant — Project Brief
+# DataPilot AI — Project Brief
 
 A web app that lets people upload data and ask questions about it in plain English.
 

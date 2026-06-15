@@ -28,7 +28,7 @@ function getPageTitle(pathname: string): string {
   if (pathname.includes("/recommendations")) return "Recommendations";
   if (pathname.startsWith("/datasets/") && pathname.endsWith("/reports")) return "Reports";
   if (pathname.startsWith("/datasets/")) return "Dataset";
-  return "Universal Data Assistant";
+  return "DataPilot AI";
 }
 
 // ── Sub-components ────────────────────────────────────────────────────────────

@@ -12,7 +12,7 @@ function SignInContent() {
     <main className="flex min-h-screen items-center justify-center bg-background">
       <div className="flex flex-col items-center gap-6 rounded-2xl border border-border bg-elevated p-10 shadow-lg w-full max-w-sm">
         <h1 className="font-display text-2xl font-semibold tracking-tight text-foreground">
-          Universal Data Assistant
+          DataPilot AI
         </h1>
         <p className="text-sm text-muted-foreground text-center">
           Sign in to upload datasets, run queries, and generate reports.

@@ -1,1 +1,1 @@
-# AI agent modules for the Universal Data Assistant.
+# AI agent modules for DataPilot AI.

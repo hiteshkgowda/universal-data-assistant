@@ -33,7 +33,7 @@ The rest of each docstring (coverage breakdown, what's mocked, what's real) is k
 ### `backend/agents/__init__.py` — line 1
 
 ```python
-# AI agent modules for the Universal Data Assistant.
+# AI agent modules for the DataPilot AI.
 ```
 
 **Problem**: The directory is called `agents/`. The comment is the filename in prose form.

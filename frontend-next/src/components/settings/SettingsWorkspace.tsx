@@ -354,11 +354,11 @@ export function SettingsWorkspace() {
         </Row>
         <Row
           label="Build"
-          description="Universal Data Assistant — AI-powered data analysis platform."
+          description="DataPilot AI — Agentic Business Intelligence Copilot."
         >
           <div className="flex items-center gap-1.5 text-muted-foreground/60">
             <Info className="h-3.5 w-3.5" aria-hidden="true" />
-            <span className="text-xs">UDA</span>
+            <span className="text-xs">DPA</span>
           </div>
         </Row>
       </Section>

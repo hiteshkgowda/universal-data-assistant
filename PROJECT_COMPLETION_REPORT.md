@@ -1,4 +1,4 @@
-# Project Completion Report — Universal Data Assistant
+# Project Completion Report — DataPilot AI
 
 **Audit date:** 2026-06-15  
 **Codebase state:** post-Phase-14, 12 commits, actively deployed  

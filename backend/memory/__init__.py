@@ -1,1 +1,1 @@
-"Conversational memory package for the Universal Data Assistant."
+"Conversational memory package for DataPilot AI."
