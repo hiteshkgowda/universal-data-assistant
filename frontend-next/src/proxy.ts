@@ -12,8 +12,8 @@ export const config = {
      *  - /auth/* (sign-in page)
      *  - /api/auth/* (NextAuth endpoints — must be public for the OAuth callback)
      *  - /_next/* (Next.js internals)
-     *  - /favicon.ico, static files
+     *  - Static files — anything with a file extension (images, fonts, icons, etc.)
      */
-    "/((?!auth/|api/auth/|_next/|favicon\\.ico).*)",
+    "/((?!auth/|api/auth/|_next/|[^/]+\\.[^/]+$).*)",
   ],
 };
