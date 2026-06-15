@@ -62,8 +62,9 @@ class StorageManager:
             ("crud_audit",     settings.crud_audit_dir),
             ("crud_rollback",  settings.crud_rollback_dir),
             ("agent_sessions", settings.agent_sessions_dir),
-            ("memory_store",   settings.memory_store_dir),
-            ("dashboards",     settings.dashboards_dir),
+            ("memory_store",        settings.memory_store_dir),
+            ("dashboards",          settings.dashboards_dir),
+            ("scheduled_reports",   settings.scheduled_reports_dir),
         ]
         self._is_production = settings.is_production
         # Persistent = operator explicitly set STORAGE_BASE_DIR, pointing to a

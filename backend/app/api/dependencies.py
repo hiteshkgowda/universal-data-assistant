@@ -92,6 +92,8 @@ from app.services.memory_service import MemoryService
 from app.services.recommendation_service import RecommendationService
 from app.services.root_cause_service import RootCauseService
 from app.services.report_service import ReportForecastConfig, ReportService
+from app.services.schedule_store import ScheduleStore
+from app.services.schedule_runner import ScheduleRunner
 from app.services.sql_executor import SqlExecutor
 from app.services.sql_translator import SQLTranslator
 from app.services.visualization_service import VisualizationService
@@ -375,4 +377,19 @@ def get_report_service() -> ReportService:
         report_version=settings.report_version,
         forecast_service=get_forecast_service(),
         forecast_config=forecast_config,
+    )
+
+
+@lru_cache(maxsize=1)
+def get_schedule_store() -> ScheduleStore:
+    return ScheduleStore(get_settings().scheduled_reports_dir)
+
+
+@lru_cache(maxsize=1)
+def get_schedule_runner() -> ScheduleRunner:
+    settings = get_settings()
+    return ScheduleRunner(
+        store=get_schedule_store(),
+        report_service=get_report_service(),
+        poll_interval=settings.schedule_runner_poll_seconds,
     )

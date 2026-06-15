@@ -834,3 +834,40 @@ export interface DashboardListResponse {
   count: number;
   dashboards: DashboardMetadata[];
 }
+
+// ---------------------------------------------------------------------------
+// Scheduled Reports
+// ---------------------------------------------------------------------------
+
+export type ScheduleFrequency = "daily" | "weekly" | "monthly";
+
+export interface ScheduledReport {
+  schedule_id: string;
+  dataset_id: string;
+  dataset_filename: string;
+  frequency: ScheduleFrequency;
+  hour: number;
+  day_of_week: number | null;
+  day_of_month: number | null;
+  questions: string[];
+  owner_sub: string;
+  created_at: string;
+  last_run_at: string | null;
+  next_run_at: string;
+  enabled: boolean;
+}
+
+export interface ScheduledReportCreate {
+  dataset_id: string;
+  frequency: ScheduleFrequency;
+  hour: number;
+  day_of_week?: number | null;
+  day_of_month?: number | null;
+  questions?: string[];
+  enabled?: boolean;
+}
+
+export interface ScheduledReportListResponse {
+  count: number;
+  schedules: ScheduledReport[];
+}

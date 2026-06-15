@@ -29,6 +29,7 @@ from app.api.dependencies import (
     get_query_planner,
     get_recommendation_service,
     get_root_cause_service,
+    get_schedule_runner,
     set_checkpointer,
 )
 from app.api.routes import (
@@ -48,6 +49,7 @@ from app.api.routes import (
     recommendations,
     reports,
     root_cause,
+    scheduled_reports,
 )
 from app.core.config import Settings, get_settings
 from app.core.storage import StorageManager
@@ -218,9 +220,12 @@ async def lifespan(_app: FastAPI) -> AsyncIterator[None]:
         # Initialise the conversational memory SQLite store (creates tables / WAL).
         _mem_svc = get_memory_service()
         await _mem_svc._store.initialize()
+        runner = get_schedule_runner()
+        runner.start()
         try:
             yield
         finally:
+            await runner.stop()
             await client.aclose()
             get_connection_service().dispose_all()
 
@@ -271,6 +276,7 @@ def create_app() -> FastAPI:
     app.include_router(dashboards.router, prefix=API_PREFIX)
     app.include_router(data_quality.router, prefix=API_PREFIX)
     app.include_router(kpi_monitor.router, prefix=API_PREFIX)
+    app.include_router(scheduled_reports.router, prefix=API_PREFIX)
 
     @app.get("/health", tags=["health"], summary="Service health check")
     def health() -> dict[str, Any]:

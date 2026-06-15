@@ -24,6 +24,7 @@ _STORAGE_FIELDS: tuple[str, ...] = (
     "agent_sessions_dir",
     "memory_store_dir",
     "dashboards_dir",
+    "scheduled_reports_dir",
 )
 
 
@@ -106,6 +107,11 @@ class Settings(BaseSettings):
 
     # AI Executive Dashboard Generator — saved dashboard JSON files.
     dashboards_dir: Path = Path("dashboards")
+
+    # Scheduled reports — one JSON file per schedule.
+    scheduled_reports_dir: Path = Path("scheduled_reports")
+    # How often the background runner checks for due schedules (seconds).
+    schedule_runner_poll_seconds: int = 60
 
     # Frontend / CORS
     # In development, localhost:3000 is always allowed.

@@ -6,6 +6,7 @@ import { useSession } from "next-auth/react";
 import { motion, useReducedMotion } from "framer-motion";
 import {
   Bot,
+  CalendarClock,
   ChevronLeft,
   ChevronRight,
   Database,
@@ -46,6 +47,7 @@ const navGroups: NavGroup[] = [
     items: [
       { href: "/dashboards", label: "Dashboards", icon: LayoutDashboard },
       { href: "/reports", label: "Reports", icon: FileText },
+      { href: "/reports/scheduled", label: "Scheduled", icon: CalendarClock },
     ],
   },
   {

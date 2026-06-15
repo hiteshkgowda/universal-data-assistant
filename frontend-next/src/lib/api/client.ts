@@ -104,6 +104,9 @@ export const api = {
   post: <T>(path: string, body?: unknown, init?: Omit<RequestOptions, "method">) =>
     apiFetch<T>(path, { ...init, method: "POST", body }),
 
+  put: <T>(path: string, body?: unknown, init?: Omit<RequestOptions, "method">) =>
+    apiFetch<T>(path, { ...init, method: "PUT", body }),
+
   delete: <T>(path: string, init?: Omit<RequestOptions, "method" | "body">) =>
     apiFetch<T>(path, { ...init, method: "DELETE" }),
 };
