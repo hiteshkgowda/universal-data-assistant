@@ -40,11 +40,31 @@ backend/connections/*
 backend/crud_audit/*
 backend/crud_rollback/*
 backend/agent_sessions/*
+# Saved dashboards and conversation memory are live user data.
+backend/dashboards/*
+!backend/dashboards/.gitkeep
+backend/memory_store/*
+!backend/memory_store/.gitkeep
+# Role definitions may contain access-control config — do not commit.
+backend/roles/*
+!backend/roles/.gitkeep
+# Saved queries and scheduled report definitions are user data.
+backend/saved_queries/*
+!backend/saved_queries/.gitkeep
+backend/scheduled_reports/*
+!backend/scheduled_reports/.gitkeep
 
 # --- Node.js ---
 node_modules/
 frontend-next/.next/
 frontend-next/out/
+# TypeScript incremental build cache — regenerated automatically on each build.
+frontend-next/tsconfig.tsbuildinfo
+
+# --- SQLite databases ---
+*.db
+*.sqlite
+*.sqlite3
 
 # --- Tooling / IDE ---
 .pytest_cache/
