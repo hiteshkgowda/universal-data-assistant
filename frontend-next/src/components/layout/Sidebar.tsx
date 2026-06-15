@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { useSession } from "next-auth/react";
 import { motion, useReducedMotion } from "framer-motion";
@@ -22,7 +23,6 @@ import {
   Link2,
   PenLine,
   Settings,
-  Zap,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Tooltip, TooltipProvider } from "@/components/ui/tooltip";
@@ -180,12 +180,14 @@ export function Sidebar() {
             collapsed ? "justify-center px-0" : "gap-2.5 px-3.5"
           )}
         >
-          <div
-            className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-gradient-primary"
-            aria-hidden="true"
-          >
-            <Zap className="h-3.5 w-3.5 text-white" />
-          </div>
+          <Image
+            src="/logo.png"
+            alt="DataPilot AI"
+            width={32}
+            height={32}
+            className="shrink-0 rounded-lg"
+            priority
+          />
           {!collapsed && (
             <div className="min-w-0">
               <p className="text-sm font-semibold tracking-tight truncate text-sidebar-foreground leading-none">
