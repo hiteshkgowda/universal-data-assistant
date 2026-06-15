@@ -110,6 +110,10 @@ const config: Config = {
           "0%, 100%": { opacity: "1" },
           "50%":      { opacity: "0.6" },
         },
+        float: {
+          "0%, 100%": { transform: "translateY(0px)" },
+          "50%":      { transform: "translateY(-10px)" },
+        },
       },
       animation: {
         "accordion-down":  "accordion-down 0.2s ease-out",
@@ -120,6 +124,7 @@ const config: Config = {
         "fade-in-scale":   "fade-in-scale 0.2s ease-out",
         "slide-in-right":  "slide-in-right 0.2s ease-out",
         "pulse-status":    "pulse-status 2.5s ease-in-out infinite",
+        float:             "float 5s ease-in-out infinite",
       },
     },
   },
