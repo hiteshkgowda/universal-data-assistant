@@ -439,6 +439,31 @@
   50%       { opacity: 1;   transform: scale(1); }
 }
 
+/* ── Mission Control startup keyframes ──────────────────────────────── */
+
+@keyframes particle-float {
+  0%   { transform: translateY(0)      translateX(0);    opacity: 0.5; }
+  40%  { opacity: 0.7; }
+  100% { transform: translateY(-120px) translateX(8px);  opacity: 0;   }
+}
+
+@keyframes blob-drift {
+  0%,  100% { transform: translate(0px,   0px)   scale(1);    }
+  25%        { transform: translate(28px, -22px)  scale(1.04); }
+  50%        { transform: translate(-12px, 26px)  scale(0.97); }
+  75%        { transform: translate(-26px, -8px)  scale(1.02); }
+}
+
+@keyframes flow-dot-v {
+  0%   { top: -10%;    opacity: 0; }
+  8%   {               opacity: 1; }
+  88%  {               opacity: 1; }
+  100% { top: 110%;    opacity: 0; }
+}
+
 @media (prefers-reduced-motion: reduce) {
-  .animate-marquee { animation: none !important; }
+  .animate-marquee,
+  .animate-particle-float,
+  .animate-blob-drift,
+  .animate-flow-dot-v { animation: none !important; }
 }
