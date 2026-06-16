@@ -114,6 +114,18 @@ const config: Config = {
           "0%, 100%": { transform: "translateY(0px)" },
           "50%":      { transform: "translateY(-10px)" },
         },
+        marquee: {
+          "0%":   { transform: "translateX(0)" },
+          "100%": { transform: "translateX(-50%)" },
+        },
+        "step-check": {
+          from: { transform: "scale(0.5)", opacity: "0" },
+          to:   { transform: "scale(1)",   opacity: "1" },
+        },
+        "loader-pulse": {
+          "0%, 100%": { opacity: "0.4", transform: "scale(0.97)" },
+          "50%":      { opacity: "1",   transform: "scale(1)" },
+        },
       },
       animation: {
         "accordion-down":  "accordion-down 0.2s ease-out",
@@ -125,6 +137,9 @@ const config: Config = {
         "slide-in-right":  "slide-in-right 0.2s ease-out",
         "pulse-status":    "pulse-status 2.5s ease-in-out infinite",
         float:             "float 5s ease-in-out infinite",
+        marquee:           "marquee 28s linear infinite",
+        "step-check":      "step-check 0.3s cubic-bezier(0.34,1.56,0.64,1) forwards",
+        "loader-pulse":    "loader-pulse 2s ease-in-out infinite",
       },
     },
   },
